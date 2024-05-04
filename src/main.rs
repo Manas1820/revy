@@ -11,7 +11,7 @@ struct Args {
 #[derive(Debug, Subcommand)]
 enum Command {
     /// Intialize the revy repository
-    Init,
+    Init { name: Option<String> },
 }
 
 const REPO_FOLDER_NAME: &str = ".revy";
@@ -29,7 +29,8 @@ fn check_if_directory_exists(path: &String) -> bool {
     fs::metadata(path).is_ok()
 }
 
-/// Fetch the path for setting up a repository.
+/// Fetch the path for setting up a repository. If a repository name is provided, a directory with the
+/// repository name is created.
 ///
 /// # Arguments
 ///
@@ -44,6 +45,7 @@ fn fetch_path_for_repository_setup(repository_name: Option<&str>) -> String {
 
     if let Some(repo_name) = repository_name {
         curent_working_directory.push_str(&format!("/{}", repo_name));
+        fs::create_dir(&curent_working_directory).unwrap();
     }
 
     return format!("{}/{}", curent_working_directory, REPO_FOLDER_NAME);
@@ -91,8 +93,8 @@ fn setup_revy(repository_name: Option<&str>) {
 fn main() {
     let args = Args::parse();
     match args.commnds {
-        Command::Init => {
-            setup_revy(None);
+        Command::Init { name } => {
+            setup_revy(name.as_deref());
         }
     }
 }
