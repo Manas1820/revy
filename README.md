@@ -5,7 +5,7 @@ Revy - It's short, catchy, and captures the essence of revision control
 ## Goals
 
 - [x] Initialize the .revy directory
-- [ ] Read a blob object
+- [x] Read a blob object
 - [ ] Create a blob object
 - [ ] Read a tree object
 - [ ] Write a tree object
