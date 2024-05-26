@@ -6,7 +6,7 @@ Revy - It's short, catchy, and captures the essence of revision control
 
 - [x] Initialize the .revy directory
 - [x] Read a blob object
-- [ ] Create a blob object
+- [x] Create a blob object
 - [ ] Read a tree object
 - [ ] Write a tree object
 - [ ] Create a commit

@@ -1,3 +1,4 @@
+use sha1::{Digest, Sha1};
 use std::fs;
 
 pub const REPO_FOLDER_NAME: &str = ".revy";
@@ -55,4 +56,18 @@ pub fn initialize_repository(current_repo_initiation_path: &str) {
         "ref: refs/head/main\n",
     )
     .unwrap();
+}
+
+/// Generate a SHA1 hash for the provided object data.
+///
+/// # Arguments
+/// * `data` - A reference to a String containing the data to hash.
+///
+/// # Returns
+/// Returns a String containing the SHA1 hash.
+pub fn generate_sha1_for_object(data: &String) -> String {
+    let mut hasher = Sha1::new();
+    hasher.update(data);
+    let result = hasher.finalize();
+    format!("{:x}", result)
 }
