@@ -26,6 +26,12 @@ enum Command {
         /// The hash of the object to display
         hash: String,
     },
+
+    /// Create a hash of the object
+    HashObject {
+        /// The path to the file to hash
+        file_path: String,
+    },
 }
 
 fn setup_revy(repository_name: Option<&str>) {
@@ -83,10 +89,46 @@ fn read_from_objects(hash: &str) {
 
     if let Some(index) = contents.find('\0') {
         let data = contents.split_off(index + 1);
-        print!("{}", data);
+        println!("{}", data);
     } else {
-        print!("Malformed object found at {}", &current_working_directory);
+        eprintln!("Malformed object found at {}", &current_working_directory);
     }
+}
+
+fn generate_sha1_hash(file_path: String) -> Result<String, String> {
+    // Objectives:
+
+    /*
+        - Check if the file exists
+        - Read the contents of the file
+        - Get the file size
+        - Create a string with the following format: "blob {file_size}\0{file_contents}"
+        - Generate a hash of the file contents
+        - Return the hash
+    */
+
+    let is_a_valid_file = utils::check_if_directory_exists(&file_path);
+    if !is_a_valid_file {
+        return Err(format!(
+            "fatal: could not open '{}' for reading: No such file or directory",
+            file_path
+        ));
+    }
+
+    let file_contents = match fs::read_to_string(&file_path) {
+        Ok(contents) => contents,
+        Err(err) => return Err(err.to_string()),
+    };
+
+    let file_meta_data = match fs::metadata(&file_path) {
+        Ok(meta_data) => meta_data,
+        Err(err) => return Err(err.to_string()),
+    };
+
+    let data_to_write = format!("blob {}\0{}", file_meta_data.len(), file_contents);
+    let generated_hash = utils::generate_sha1_for_object(&data_to_write);
+
+    Ok(generated_hash)
 }
 
 fn main() -> std::io::Result<()> {
@@ -101,7 +143,10 @@ fn main() -> std::io::Result<()> {
             }
             read_from_objects(&hash);
         }
+        Command::HashObject { file_path } => match generate_sha1_hash(file_path) {
+            Ok(hash) => println!("{}", hash),
+            Err(err) => eprintln!("{}", err),
+        },
     }
-
     Ok(())
 }
