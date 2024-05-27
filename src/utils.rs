@@ -65,7 +65,7 @@ pub fn initialize_repository(current_repo_initiation_path: &str) {
 ///
 /// # Returns
 /// Returns a String containing the SHA1 hash.
-pub fn generate_sha1_for_object(data: &String) -> String {
+pub fn generate_sha1(data: &String) -> String {
     let mut hasher = Sha1::new();
     hasher.update(data);
     let result = hasher.finalize();
