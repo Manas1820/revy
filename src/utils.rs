@@ -35,7 +35,7 @@ pub fn fetch_path_for_repository(repository_name: Option<&str>) -> String {
         fs::create_dir(&curent_working_directory).unwrap();
     }
 
-    return format!("{}/{}", curent_working_directory, REPO_FOLDER_NAME);
+    format!("{}/{}", curent_working_directory, REPO_FOLDER_NAME)
 }
 
 /// Initialize a repository at the specified path.

@@ -85,7 +85,7 @@ impl Object {
         match decoded_reader.read_until(0, &mut header_contents) {
             Ok(_size) => {}
             Err(_err) => {
-                return Err(format!("Failed to read object file, invalid header"));
+                return Err("Failed to read object file, invalid header".to_string());
             }
         }
 
@@ -97,7 +97,7 @@ impl Object {
                     Ok(header_parts)
                 }
                 Err(_err) => {
-                    return Err(format!("Failed to read object file, invalid header",));
+                    return Err("Failed to read object file, invalid header".to_string());
                 }
             };
 

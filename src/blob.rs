@@ -21,7 +21,7 @@ impl Blob {
         match decoded_reader.read_to_end(&mut buffer) {
             Ok(_size) => {}
             Err(_err) => {
-                return Err(format!("Failed to read object file while parsing blob"));
+                return Err("Failed to read object file while parsing blob".to_string());
             }
         }
 

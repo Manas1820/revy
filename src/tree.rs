@@ -81,7 +81,7 @@ impl Tree {
             match decoded_reader.read_until(0, &mut node_data) {
                 Ok(_size) => {}
                 Err(_err) => {
-                    return Err(format!("Failed to read object file while parsing tree"));
+                    return Err("Failed to read object file while parsing tree".to_string());
                 }
             }
 
@@ -93,13 +93,13 @@ impl Tree {
             let node_parts: Vec<&str> = node_str.split_whitespace().collect();
 
             if node_parts.len() != 2 {
-                return Err(format!("Failed to read object file while parsing tree"));
+                return Err("Failed to read object file while parsing tree".to_string());
             }
 
             let mode = match node_parts[0].parse::<u32>() {
                 Ok(mode) => mode,
                 Err(_err) => {
-                    return Err(format!("Failed to read object file while parsing tree"));
+                    return Err("Failed to read object file while parsing tree".to_string());
                 }
             };
 
