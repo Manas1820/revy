@@ -4,10 +4,10 @@ Revy - It's short, catchy, and captures the essence of revision control
 
 ## Goals
 
-- [ ] Initialize the .git directory
-- [ ] Read a blob object
-- [ ] Create a blob object
-- [ ] Read a tree object
+- [x] Initialize the .revy directory
+- [x] Read a blob object
+- [x] Create a blob object
+- [x] Read a tree object
 - [ ] Write a tree object
 - [ ] Create a commit
 - [ ] Clone a repository
