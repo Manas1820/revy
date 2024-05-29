@@ -1,9 +1,8 @@
-use flate2::read::ZlibDecoder;
 use std::fs::File;
+use std::hash::{self, Hash};
 use std::io::{BufRead, BufReader};
 
-#[path = "utils.rs"]
-mod utils;
+use flate2::read::ZlibDecoder;
 
 #[derive(Debug)]
 pub enum FileMode {
@@ -33,16 +32,6 @@ impl FileMode {
         }
     }
 
-    // pub fn from_str(mode: &str) -> Option<FileMode> {
-    //     match mode {
-    //         "blob" => Some(FileMode::RegularFile),
-    //         "tree" => Some(FileMode::Directory),
-    //         "commit" => Some(FileMode::SymbolicLink),
-    //         _ => None,
-    //     }
-    // }
-
-    //
     pub fn as_u32_str(&self) -> &str {
         match self {
             FileMode::RegularFile => "100644",
@@ -67,12 +56,22 @@ pub struct Node {
     hash: String,
 }
 
+impl Node {
+    pub fn new(mode: FileMode, name: String, hash: String) -> Node {
+        Node { mode, name, hash }
+    }
+}
+
 #[derive(Debug)]
 pub struct Tree {
     pub data: Vec<Node>,
 }
 
 impl Tree {
+    pub fn new(data: Vec<Node>) -> Tree {
+        Tree { data }
+    }
+
     pub fn parse_tree(mut decoded_reader: BufReader<ZlibDecoder<File>>) -> Result<Tree, String> {
         let mut tree = Tree { data: Vec::new() };
 
@@ -121,6 +120,27 @@ impl Tree {
         for node in &self.data {
             println!("{}", node.name);
         }
+    }
+
+    pub fn as_bytes(&self) -> Vec<u8> {
+        let mut tree_contents = Vec::new();
+        for node in &self.data {
+            let contents = format!("{} {}\0", node.mode.as_u32_str(), node.name);
+            tree_contents.extend(contents.as_bytes());
+
+            let hash = hex::decode(&node.hash).unwrap();
+            tree_contents.extend(&hash);
+        }
+        tree_contents
+    }
+
+    pub fn as_str(&self) -> String {
+        let mut tree_contents = String::new();
+        for node in &self.data {
+            let contents = format!("{} {}\0{}", node.mode.as_u32_str(), node.name, node.hash);
+            tree_contents.push_str(&contents);
+        }
+        tree_contents
     }
 
     pub fn print_pretty_tree(&self) {

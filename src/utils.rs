@@ -1,5 +1,6 @@
+use glob;
 use sha1::{Digest, Sha1};
-use std::fs;
+use std::{fs, path::PathBuf};
 
 pub const REPO_FOLDER_NAME: &str = ".revy";
 
@@ -70,4 +71,57 @@ pub fn generate_sha1(data: &String) -> String {
     hasher.update(data);
     let result = hasher.finalize();
     format!("{:x}", result)
+}
+
+/// Fetch Excluded Paths
+pub fn fetch_excluded_paths() -> Vec<String> {
+    // TODO: Implement this function to fetch excluded paths from the .revyignore file
+    // and check if a local .revyignore file exists in the current directory and ignore those too
+
+    //Objectives:
+
+    /*
+        - Check if a .revyignore file exists in the current directory
+        - Read the contents of the .revyignore file
+        - Parse the contents of the .revyignore file
+        - Return the list of excluded paths
+    */
+
+    let mut excluded_paths: Vec<String> = Vec::new();
+
+    let global_revy_ignore_path = PathBuf::from("./.revyignore");
+
+    if check_if_directory_exists(&global_revy_ignore_path.to_str().unwrap().to_string()) {
+        let global_revy_ignore_contents = fs::read_to_string(global_revy_ignore_path).unwrap();
+        let global_revy_ignore_lines = global_revy_ignore_contents.lines();
+
+        for line in global_revy_ignore_lines {
+            if line.trim().starts_with("#") {
+                continue;
+            }
+
+            let mut line = line.to_string();
+            line = line.trim().to_string();
+            if line.is_empty() {
+                continue;
+            }
+            line = line.split("#").collect::<Vec<&str>>()[0].to_string();
+
+            excluded_paths.push(line.to_string());
+        }
+    }
+    excluded_paths
+}
+
+/// Check if a path should be ignored.
+
+pub fn should_ignore(path: &std::path::Path, patterns: &[String]) -> bool {
+    // TODO: Implement a better way to check if a path should be ignored.
+
+    // println!("Path : {:?} , Pattern: {:?}", path, patterns);
+    let path_str = path.to_str().unwrap();
+    patterns.iter().any(|pattern| {
+        glob::Pattern::new(pattern).unwrap().matches_path(path)
+            || path_str.contains(pattern.trim_end_matches('/'))
+    })
 }

@@ -1,7 +1,5 @@
+use crate::utils;
 use std::fs;
-
-#[path = "utils.rs"]
-mod utils;
 
 pub fn setup_revy(repository_name: Option<&str>) {
     let current_repo_initiation_path = utils::fetch_path_for_repository(repository_name);

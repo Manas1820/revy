@@ -1,7 +1,11 @@
+use std::path::Path;
+
 use clap::{Parser, Subcommand};
+mod blob;
 mod command;
 mod object;
 mod tree;
+mod utils;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -30,6 +34,10 @@ enum Command {
     HashObject {
         /// The path to the file to hash
         file_path: String,
+
+        /// Write the object into the object database
+        #[arg(short, long)]
+        write: bool,
     },
     LsTree {
         /// The hash of the object to display
@@ -37,6 +45,20 @@ enum Command {
         /// List only filenames (instead of the "long" output), one per line. Cannot be combined with --object-only.
         #[arg(long)]
         name_only: bool,
+    },
+
+    WriteTree,
+    CommitTree {
+        /// The commit message
+        #[arg(short, long)]
+        message: String,
+
+        /// The hash of the tree to commit
+        hash: String,
+
+        /// The hash of the parent commit
+        #[arg(short, long)]
+        parent: Option<String>,
     },
 }
 
@@ -51,16 +73,15 @@ fn main() -> std::io::Result<()> {
                 todo!()
             }
             let object = object::Object::load_object_from_hash(&hash).unwrap();
-            match object.metadata {
-                object::Metadata::Blob(blob) => blob.print_blob(),
-                object::Metadata::Tree(tree) => tree.print_pretty_tree(),
-                _ => panic!("Object is not a blob"),
-            };
+            object.print_object();
         }
-        Command::HashObject { file_path } => match command::generate_sha1_hash(file_path) {
-            Ok(hash) => println!("{}", hash),
-            Err(err) => eprintln!("{}", err),
-        },
+        Command::HashObject { file_path, write } => {
+            let object = object::Object::create_blob(Path::new(&file_path).to_path_buf()).unwrap();
+            if write {
+                object.save_object();
+            }
+            println!("{}", object.hash);
+        }
         Command::LsTree { name_only, hash } => {
             if !name_only {
                 todo!()
@@ -71,6 +92,17 @@ fn main() -> std::io::Result<()> {
                 object::Metadata::Tree(tree) => tree.print_tree(),
                 _ => panic!("Object is not a tree"),
             };
+        }
+        Command::WriteTree => {
+            let object = object::Object::create_tree(None).unwrap();
+            println!("{}", object.hash);
+        }
+        Command::CommitTree {
+            hash,
+            message,
+            parent,
+        } => {
+            println!("{} {} {:?}", hash, message, parent);
         }
     }
     Ok(())

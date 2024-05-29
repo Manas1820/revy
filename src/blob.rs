@@ -12,7 +12,17 @@ impl Blob {
         Blob { data }
     }
 
-    pub fn parse_blob(mut decoded_reader: BufReader<ZlibDecoder<File>>) -> Result<Blob, String> {
+    pub fn as_str(&self) -> &str {
+        &self.data
+    }
+
+    pub fn as_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        bytes.extend(self.data.as_bytes());
+        bytes
+    }
+
+    pub fn from_file(mut decoded_reader: BufReader<ZlibDecoder<File>>) -> Result<Blob, String> {
         let mut blob = Blob {
             data: String::new(),
         };
