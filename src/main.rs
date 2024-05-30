@@ -103,6 +103,7 @@ fn main() -> std::io::Result<()> {
             parent,
         } => {
             println!("{} {} {:?}", hash, message, parent);
+            todo!();
         }
     }
     Ok(())
