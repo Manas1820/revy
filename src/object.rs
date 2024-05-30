@@ -17,8 +17,11 @@ pub enum ObjectType {
     Blob,
 }
 
-#[allow(dead_code)]
 impl ObjectType {
+    /// Returns the string representation of the `ObjectType`.
+    ///
+    /// # Returns
+    /// A string slice that represents the type of the object (`"tree"` or `"blob"`).
     pub fn as_str(&self) -> &'static str {
         match self {
             ObjectType::Tree => "tree",
@@ -26,6 +29,13 @@ impl ObjectType {
         }
     }
 
+    /// Creates an `ObjectType` from a string.
+    ///
+    /// # Arguments
+    /// * `mode` - A string slice representing the mode of the object.
+    ///
+    /// # Returns
+    /// An `Option` containing the `ObjectType` if the string matches a known type, or `None` otherwise.
     pub fn from_str(mode: &str) -> Option<ObjectType> {
         match mode {
             "tree" => Some(ObjectType::Tree),
