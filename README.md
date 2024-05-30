@@ -8,7 +8,7 @@ Revy - It's short, catchy, and captures the essence of revision control
 - [x] Read a blob object
 - [x] Create a blob object
 - [x] Read a tree object
-- [ ] Write a tree object
+- [x] Write a tree object
 - [ ] Create a commit
 - [ ] Clone a repository
 
